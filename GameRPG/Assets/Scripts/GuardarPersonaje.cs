@@ -1,20 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 public class GuardarPersonaje : MonoBehaviour
 {
     public bool Assasin;
     public bool Magician;
 
+    private void Awake()
+    {
+        Assasin = PlayerPrefs.GetInt("AssasinSelect", 1) == 1;  // valor por defecto: Assasin = true
+        Magician = PlayerPrefs.GetInt("MagicianSelect", 0) == 1;
+    }
+
     private void Update()
     {
-        if (Assasin == false && Magician == false)
+        if (!Assasin && !Magician)
         {
-            Assasin = true;
+            Assasin = true; // valor por defecto si ninguno está activo
         }
-
-        Assasin = PlayerPrefs.GetInt("Assasin Seelect") == 1;
-        Magician = PlayerPrefs.GetInt("Magician select") == 1;
     }
 
     public void PersonajeAssasin()
@@ -24,16 +28,17 @@ public class GuardarPersonaje : MonoBehaviour
         Guardar();
     }
 
-    public void  PersnajeMagician()
+    public void PersonajeMagician()
     {
-        Magician = true;
         Assasin = false;
+        Magician = true;
         Guardar();
     }
 
     public void Guardar()
     {
-        PlayerPrefs.SetInt("Assasin Select", Assasin ? 1 : 0);
-        PlayerPrefs.SetInt("Magician Select", Magician ? 1 : 0);
+        PlayerPrefs.SetInt("AssasinSelect", Assasin ? 1 : 0);
+        PlayerPrefs.SetInt("MagicianSelect", Magician ? 1 : 0);
+        PlayerPrefs.Save();
     }
 }

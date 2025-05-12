@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CargarPersonaje : MonoBehaviour
@@ -5,25 +7,32 @@ public class CargarPersonaje : MonoBehaviour
     public GameObject AssasinPersonaje;
     public GameObject MagicianPersonaje;
 
-    public bool Assasin;
-    public bool Magician;
+    private bool assasinSeleccionado;
+    private bool magicianSeleccionado;
 
-    private void Update()
+    private void Start()
     {
-        Assasin = PlayerPrefs.GetInt("Assasin Seelect") == 1;
-        Magician = PlayerPrefs.GetInt("Magician select") == 1;
+        assasinSeleccionado = PlayerPrefs.GetInt("AssasinSelect", 1) == 1;
+        magicianSeleccionado = PlayerPrefs.GetInt("MagicianSelect", 0) == 1;
 
-        if (Assasin == true)
+        if (assasinSeleccionado && AssasinPersonaje != null)
         {
             AssasinPersonaje.SetActive(true);
-            Destroy(MagicianPersonaje);
         }
 
-        if (Magician == true)
+        if (magicianSeleccionado && MagicianPersonaje != null)
         {
             MagicianPersonaje.SetActive(true);
-            Destroy(AssasinPersonaje);
-            Destroy(AssasinPersonaje);
+        }
+
+        // Desactivamos el personaje que no fue seleccionado (no se destruye para evitar errores)
+        if (assasinSeleccionado && MagicianPersonaje != null)
+        {
+            MagicianPersonaje.SetActive(false);
+        }
+        else if (magicianSeleccionado && AssasinPersonaje != null)
+        {
+            AssasinPersonaje.SetActive(false);
         }
     }
 }
