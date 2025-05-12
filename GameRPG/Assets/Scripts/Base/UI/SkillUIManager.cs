@@ -3,63 +3,70 @@ using UnityEngine.UI;
 
 public class SkillUIManager : MonoBehaviour
 {
-    // Referencias a los íconos de las habilidades
-    public Image[] skillIcons;
-    public Text[] skillCooldownText;
+    public Image[] skillIcons;           // Iconos visibles de las habilidades
+    public Text[] skillCooldownText;     // Texto que muestra el cooldown en segundos
 
-    private float[] cooldownTimers;
-    private float[] skillCooldowns;
+    private float[] cooldownTimers;      // Tiempo restante de cooldown para cada habilidad
+    private float[] skillCooldowns;      // Tiempo total de cooldown para cada habilidad
 
     void Start()
     {
-        // Inicializamos el arreglo de cooldowns y timers
-        cooldownTimers = new float[skillIcons.Length];
-        skillCooldowns = new float[skillIcons.Length];
+        int skillCount = skillIcons.Length;
+        cooldownTimers = new float[skillCount];
+        skillCooldowns = new float[skillCount];
 
-        // Inicializamos los cooldowns de las habilidades (esto se debe ajustar según cada habilidad)
-        for (int i = 0; i < skillCooldowns.Length; i++)
+        // Asignar cooldowns por defecto
+        for (int i = 0; i < skillCount; i++)
         {
-            skillCooldowns[i] = 5f; // Puedes ajustar estos valores a la duración del cooldown de cada habilidad
+            skillCooldowns[i] = 5f;
         }
     }
 
     void Update()
     {
-        // Actualizamos cada habilidad
         for (int i = 0; i < skillIcons.Length; i++)
         {
-            // Si la habilidad está en cooldown
             if (cooldownTimers[i] > 0)
             {
-                // Reducir el tiempo del cooldown
                 cooldownTimers[i] -= Time.deltaTime;
 
-                // Actualiza la imagen del ícono con un color gris
-                skillIcons[i].color = new Color(1f, 1f, 1f, Mathf.Lerp(0.5f, 1f, cooldownTimers[i] / skillCooldowns[i]));
+                float alpha = Mathf.Lerp(0.5f, 1f, cooldownTimers[i] / skillCooldowns[i]);
+                if (skillIcons[i] != null)
+                    skillIcons[i].color = new Color(1f, 1f, 1f, alpha);
 
-                // Actualizar el texto del cooldown
-                skillCooldownText[i].text = Mathf.Ceil(cooldownTimers[i]).ToString("F0");
+                if (skillCooldownText[i] != null)
+                    skillCooldownText[i].text = Mathf.Ceil(cooldownTimers[i]).ToString("F0");
             }
             else
             {
-                // Si no está en cooldown, mostrar el ícono normal
-                skillIcons[i].color = Color.white;
-                skillCooldownText[i].text = "";
+                if (skillIcons[i] != null)
+                    skillIcons[i].color = Color.white;
+
+                if (skillCooldownText[i] != null)
+                    skillCooldownText[i].text = "";
             }
         }
     }
 
-    // asignar los íconos de las habilidades y sus tiempos de cooldown
     public void SetSkillIcon(int index, Sprite icon, float cooldown)
     {
         if (index < skillIcons.Length)
         {
-            skillIcons[index].sprite = icon;
+            if (skillIcons[index] != null)
+                skillIcons[index].sprite = icon;
+
             skillCooldowns[index] = cooldown;
         }
     }
 
-    // activar el cooldown de una habilidad
+    public void SetAllSkills(Sprite[] icons, float[] cooldowns)
+    {
+        for (int i = 0; i < skillIcons.Length; i++)
+        {
+            SetSkillIcon(i, icons[i], cooldowns[i]);
+        }
+    }
+
     public void TriggerCooldown(int index)
     {
         if (index < cooldownTimers.Length)
@@ -68,9 +75,16 @@ public class SkillUIManager : MonoBehaviour
         }
     }
 
-    // verificar si una habilidad está lista para ser usada
     public bool IsSkillReady(int index)
     {
         return cooldownTimers[index] <= 0;
+    }
+
+    public void ResetAllCooldowns()
+    {
+        for (int i = 0; i < cooldownTimers.Length; i++)
+        {
+            cooldownTimers[i] = 0f;
+        }
     }
 }
