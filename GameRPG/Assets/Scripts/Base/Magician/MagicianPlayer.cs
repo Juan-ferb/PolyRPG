@@ -9,11 +9,25 @@ public class MagicianPlayer : PlayerBase, ICharacterAbilities
     public float shieldAmount = 50f;
 
     private Camera mainCamera;
+    private CharacterSkillSetup skillSetup;  // Referencia a CharacterSkillSetup
 
     protected override void Start()
     {
         base.Start();
         mainCamera = Camera.main;
+        skillSetup = GetComponent<CharacterSkillSetup>(); // Obtener referencia al CharacterSkillSetup
+
+        // Configurar las habilidades de este personaje
+        skillSetup.skillIcons = new Sprite[]
+        {
+            Resources.Load<Sprite>("Icons/Fireball"),
+            Resources.Load<Sprite>("Icons/Teleport"),
+            Resources.Load<Sprite>("Icons/Shield")
+        };
+
+        skillSetup.skillCooldowns = new float[] { 5f, 10f, 15f };
+
+        skillSetup.SetupCharacterSkills();  // Asignar los íconos y cooldowns a la UI
     }
 
     protected override void Update()
@@ -34,7 +48,6 @@ public class MagicianPlayer : PlayerBase, ICharacterAbilities
     {
         if (mainCamera == null) return;
 
-        // Disparo hacia la mirilla (centro de pantalla)
         Ray ray = mainCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
         Vector3 targetDirection = ray.direction;
 
@@ -47,17 +60,17 @@ public class MagicianPlayer : PlayerBase, ICharacterAbilities
         }
 
         Destroy(fireball, 5f);
-        Debug.Log("Magician lanz� una bola de fuego.");
+        Debug.Log("Magician lanzó una bola de fuego.");
     }
 
     public void UseSkill2()
     {
         transform.position += transform.forward * teleportDistance;
-        Debug.Log("Magician se teletransport�.");
+        Debug.Log("Magician se teletransportó.");
     }
 
     public void UseSkill3()
     {
-        Debug.Log("Magician activ� un escudo de " + shieldAmount + " puntos.");
+        Debug.Log("Magician activó un escudo de " + shieldAmount + " puntos.");
     }
 }

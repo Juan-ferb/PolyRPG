@@ -5,19 +5,39 @@ public class AssasinPlayer : PlayerBase, ICharacterAbilities
 {
     public GameObject knifePrefab;
     public GameObject poisonAreaPrefab;
-    public float healAmount = 20f;
+    public float healAmount = 50f;
 
     private PlayerStats playerStats;
+    private CharacterSkillSetup skillSetup;  // Referencia a CharacterSkillSetup
 
     protected override void Start()
     {
         base.Start();
         playerStats = GetComponentInParent<PlayerStats>();
+        skillSetup = GetComponentInChildren<CharacterSkillSetup>(); // Buscar también en hijos
 
         if (playerStats == null)
         {
             Debug.LogError("PlayerStats no encontrado en el padre del Assasin.");
         }
+
+        if (skillSetup == null)
+        {
+            Debug.LogError("CharacterSkillSetup no encontrado. Asegúrate de que esté en este objeto o en sus hijos.");
+            return; // Detener ejecución para evitar errores
+        }
+
+        // Configurar las habilidades de este personaje
+        skillSetup.skillIcons = new Sprite[]
+        {
+            Resources.Load<Sprite>("Icons/knife"),
+            Resources.Load<Sprite>("Icons/Poison"),
+            Resources.Load<Sprite>("Icons/Heal")
+        };
+
+        skillSetup.skillCooldowns = new float[] { 5f, 10f, 15f };
+
+        skillSetup.SetupCharacterSkills();  // Asignar los íconos y cooldowns a la UI
     }
 
     protected override void Update()

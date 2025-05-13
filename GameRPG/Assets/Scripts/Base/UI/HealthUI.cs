@@ -3,6 +3,7 @@ using UnityEngine.UI;
 
 public class HealthUI : MonoBehaviour
 {
+
     public PlayerStats playerStats;
     public Image fillImage; // Esta es la imagen que representa la barra de vida.
 
@@ -27,7 +28,10 @@ public class HealthUI : MonoBehaviour
 
     void Update()
     {
-        // Esta función puede ser utilizada para actualizar la UI en cada frame si es necesario
-        // Pero en este caso, ya se actualiza al recibir daño o curarse
+        if (playerStats != null && fillImage != null)
+        {
+            UpdateHealthUI(playerStats.GetCurrentHealth(), playerStats.maxHealth);
+        }
     }
+
 }

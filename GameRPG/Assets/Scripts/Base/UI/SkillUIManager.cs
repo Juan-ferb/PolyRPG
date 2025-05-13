@@ -34,7 +34,7 @@ public class SkillUIManager : MonoBehaviour
                 if (skillIcons[i] != null)
                     skillIcons[i].color = new Color(1f, 1f, 1f, alpha);
 
-                if (skillCooldownText[i] != null)
+                if (skillCooldownText != null && i < skillCooldownText.Length && skillCooldownText[i] != null)
                     skillCooldownText[i].text = Mathf.Ceil(cooldownTimers[i]).ToString("F0");
             }
             else
@@ -42,7 +42,7 @@ public class SkillUIManager : MonoBehaviour
                 if (skillIcons[i] != null)
                     skillIcons[i].color = Color.white;
 
-                if (skillCooldownText[i] != null)
+                if (skillCooldownText != null && i < skillCooldownText.Length && skillCooldownText[i] != null)
                     skillCooldownText[i].text = "";
             }
         }
@@ -50,34 +50,60 @@ public class SkillUIManager : MonoBehaviour
 
     public void SetSkillIcon(int index, Sprite icon, float cooldown)
     {
-        if (index < skillIcons.Length)
+        if (index < skillIcons.Length && skillIcons[index] != null && icon != null)
         {
-            if (skillIcons[index] != null)
-                skillIcons[index].sprite = icon;
-
+            skillIcons[index].sprite = icon;
             skillCooldowns[index] = cooldown;
+        }
+        else
+        {
+            Debug.LogWarning($"SkillUIManager: skillIcons[{index}] está vacío o el icono es null.");
         }
     }
 
     public void SetAllSkills(Sprite[] icons, float[] cooldowns)
     {
-        for (int i = 0; i < skillIcons.Length; i++)
+        if (icons == null || cooldowns == null)
+        {
+            Debug.LogWarning("SkillUIManager: Los arrays de íconos o cooldowns son null.");
+            return;
+        }
+
+        for (int i = 0; i < Mathf.Min(skillIcons.Length, icons.Length, cooldowns.Length); i++)
         {
             SetSkillIcon(i, icons[i], cooldowns[i]);
         }
     }
 
+    public void SetSkillIcons(Sprite[] icons)
+    {
+        for (int i = 0; i < skillIcons.Length && i < icons.Length; i++)
+        {
+            if (skillIcons[i] != null && icons[i] != null)
+            {
+                skillIcons[i].sprite = icons[i];
+                skillIcons[i].color = Color.white; // Asegura que se vea correctamente
+            }
+        }
+    }
+
     public void TriggerCooldown(int index)
     {
-        if (index < cooldownTimers.Length)
+        if (index < cooldownTimers.Length && index < skillCooldowns.Length)
         {
             cooldownTimers[index] = skillCooldowns[index];
+        }
+        else
+        {
+            Debug.LogWarning($"SkillUIManager: índice de habilidad {index} fuera de rango en TriggerCooldown.");
         }
     }
 
     public bool IsSkillReady(int index)
     {
-        return cooldownTimers[index] <= 0;
+        if (index < cooldownTimers.Length)
+            return cooldownTimers[index] <= 0;
+        return false;
     }
 
     public void ResetAllCooldowns()
